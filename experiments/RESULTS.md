@@ -612,3 +612,80 @@ this project, the discipline has held.
 causal sequence features, listwise InfoNCE K=4) — +0.0170 over the published
 0.5946. Remaining OPEN ideas after this run: #12 duration-normalised play-ratio
 as an auxiliary signal, #13 K=2 under FM-rich, #14 per-field embedding sizes.
+
+## Run 31 — 30 Aug 2026, autonomous iteration 2: duration-normalised play-ratio as an *auxiliary* signal
+
+*Idea picked by the agent from IDEAS.md's residual-unknown list (#12).* Run 1
+killed the dense play-ratio **target** — the model learned "prefer short
+videos", since `play_time/duration` is duration-mediated — and explicitly left
+the duration-normalised variant open. It was never revisited across the three
+revolutions since (listwise InfoNCE, FM > MLP on rich fields, causal sequence
+features). Two things make this a genuine premise gap rather than a retry:
+
+1. **Auxiliary, not target.** The ranking objective is untouched listwise
+   InfoNCE on `long_view`. The play ratio only supplies extra gradient to the
+   *shared* embedding matrix V through its own head
+   (`za = ba + Wa[X].sum + Σ_j ca_j · 0.5(S_j² − Σ_f E_fj²)`). A signal can be
+   a bad target and still be a good regulariser.
+2. **Duration-normalised by construction.** The target is the row's play ratio
+   as a **percentile within its own duration bucket**. The diagnostic printed
+   at run start confirms the normalisation does exactly what Run 1 wanted:
+   `corr(target, dur_bucket) = −0.376` for the global percentile versus
+   **−0.000** for the within-bucket one.
+
+The mechanism argument for why this could beat Run 19's dead click/like heads:
+click and like are *sparse binary* events that recent-behavior features already
+predict, whereas the play ratio is **dense and graded on every impression** —
+including the ~85% negatives the binary label says nothing about. It is the
+only supervision in KuaiRand-Pure that reports how *close* a negative came to
+being a positive.
+
+Verification before running: the aux head's analytic gradients (V, Wa, ca, ba)
+were finite-difference checked in float64 (agreement to 7+ significant
+figures), and `rank_step` was shown **bit-identical** to the banked
+`listwise.infonce_step` over 5 steps, so the control arm is a true control
+rather than a re-implementation. FM k=16, lr 1e-3, K=4, patience 4, rich causal
+fields, aux on alternate batches, 3 seeds per arm.
+
+| Arm | valid (5 dp) | Δ vs control | test primary | test GAUC / nDCG@5 |
+|---|---|---|---|---|
+| R31-ctrl FM-rich, no aux head | 0.61715 | — | 0.6098 ± 0.0010 | 0.6797 / 0.5398 |
+| R31a aux, within-bucket, λ=0.3 | 0.61587 | **−0.00128** | 0.6095 ± 0.0009 | 0.6798 / 0.5392 |
+| R31b aux, within-bucket, λ=1.0 | 0.61608 | **−0.00107** | 0.6095 ± 0.0002 | 0.6797 / 0.5393 |
+| R31c aux, global percentile, λ=0.3 | 0.61584 | **−0.00131** | 0.6095 ± 0.0009 | 0.6798 / 0.5392 |
+
+**Verdict: IDEA #12 DEAD, no promotion, no bank.** Every aux arm lands *below*
+the control on validation. The promotion step (5-seed committee of the winning
+arm against the banked R24b committee's validation 0.61906) was written into
+the script and did not fire, as pre-committed. Nothing here clears the 0.002
+bar in either direction, so the *magnitude* is not claimed — but the **sign is
+consistent across three arms, three seeds each, and both metric components**
+(valid GAUC 0.6882–0.6885 vs the control's 0.6900; nDCG@5 0.5434–0.5436 vs
+0.5443), which is worth recording as a directional observation.
+
+**Interpretation — the informative part is R31c.** The two-arm contrast was
+designed to isolate Run 1's stated cause of death: R31a's target has *zero*
+correlation with duration, R31c's has −0.376. They perform **identically**
+(−0.00128 vs −0.00131). Duration mediation, then, was never the binding
+problem for this signal — it was the visible symptom in Run 1's setup. The
+real issue is that watch-completion is a *different ranking of the same rows*
+than within-user preference: the play ratio correlates 0.79 with `long_view`
+in the aggregate, but the 0.21 it does not share is precisely the part the
+GAUC/nDCG objective is scored on, and any gradient pulling the shared
+embeddings toward the completion ordering pulls them off the ranking one.
+λ=1.0 being no worse than λ=0.3 confirms this is a direction problem, not a
+weight-tuning problem. The auxiliary-head family is now 0-for-2 (Run 19
+sparse binary, Run 31 dense graded) under the sequence-feature premise, and
+for the same underlying reason both times: once causal recent-behavior
+features are present, extra outcome supervision has nothing left to teach the
+representation.
+
+*Determinism note for the audit:* R31-ctrl reproduces Run 30's control to five
+decimal places on validation (0.61715) and four on test (0.6098) from an
+independently constructed code path — the control arms are stable, so
+cross-run comparison at this precision is sound.
+
+**Banked best unchanged: test primary 0.6116** (5-seed FM committee, k=16,
+rich causal sequence features, listwise InfoNCE K=4) — +0.0170 over the
+published 0.5946. Remaining OPEN ideas after this run: #13 K=2 under FM-rich,
+#14 per-field embedding sizes.

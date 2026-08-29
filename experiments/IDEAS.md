@@ -60,6 +60,14 @@ averaging. Reproduce via experiments/ensemble.py.
 - Bigger K in InfoNCE (Run 4): K=8 ≈ K=4, saturated.
 - Seed ensembling beyond 5 (Run 8): +0.0004 total; FM seeds converge to
   near-identical solutions. Already banked; more seeds won't add.
+- Play-ratio as an AUXILIARY head over shared FM embeddings (Run 31): a dense
+  graded engagement target, correlated 0.79 with long_view, still costs
+  ~0.0011 validation whether it is duration-normalised or not and at either
+  aux weight. Run 1 blamed duration mediation; Run 31 shows that was not the
+  binding problem — the ratio is a *different ranking* of the same rows
+  (watch-completion, not within-user preference), and any gradient that pulls
+  the shared embeddings toward it pulls them off the GAUC/nDCG objective. Do
+  not retry with a third normalisation.
 - Side/content fields, re-tested under the FM-rich premise (Run 30): hour and
   video_type/music_type/tag are worth +0.0003 on validation under the FM on
   rich causal features — the *same* +0.0003 Run 5 measured under the MLP on
@@ -86,7 +94,10 @@ premises, noted per item. The agent picks from these.)
 11. DEAD (Run 30b: valid −0.00003 vs control; Run 30c stacking both = +0.00031,
     still 6× under the gate) — **content fields (video_type/music_type/tag)
     under FM-rich** — same premise gap as #10.
-12. **duration-normalised play-ratio as auxiliary signal** — Run 1 killed the
+12. DEAD (Run 31: all three aux arms BELOW a same-run control on validation,
+    −0.0011 to −0.0013; λ=0.3 and λ=1.0 alike, and the duration-normalised and
+    duration-mediated targets are indistinguishable from each other) —
+    **duration-normalised play-ratio as auxiliary signal** — Run 1 killed the
     naive ratio TARGET but explicitly left the duration-normalised variant
     open; never revisited after the objective/feature revolutions.
 13. **K=2 under FM-rich** — K saturated upward (4≈8) on base fields; the
