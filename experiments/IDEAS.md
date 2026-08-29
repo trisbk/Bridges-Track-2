@@ -1,0 +1,88 @@
+# Idea backlog — the agent's research memory
+
+Statuses: OPEN (untested) · DEAD (tested, rejected, do not retry naively) ·
+BANKED (in the current best recipe). Every DEAD entry links the run that
+killed it in RESULTS.md — read the reason before proposing anything similar.
+
+## Banked recipe (test primary 0.5986, day-1 close)
+Listwise InfoNCE objective (K=4), mixed ensemble of 5× MLP (k=16, H=64,
+lr 3e-4) + 5× FM (k=16, lr 1e-3), predictions z-scored per model before
+averaging. Reproduce via experiments/ensemble.py.
+
+## OPEN — ordered by expected value
+
+1. ~~FwFM~~ DEAD (Run 9: 0.5978 = plain FM; interactions already balanced) — **FwFM (field-weighted FM)** — learn a scalar weight per field *pair*, so
+   e.g. user×video interactions can matter more than tab×dur_bucket. Small
+   param count, direct expressiveness gain over FM's uniform interactions.
+2. BANKED (Run 10: 0.5984 single, best model; k=16/H=64 optimal per Run 12) — **MLP head over embeddings** — concat field embeddings → 1 hidden layer
+   (e.g. 64, ReLU) → score. First nonlinear model in the series; needs its own
+   lr search. Highest ceiling, highest variance risk.
+3. DEAD (Run 13a: no gain; with Run 2, pointwise adds nothing in any mixture) — **Objective annealing** — start pointwise (fast, calibrated start), switch
+   to listwise for late epochs. Cheap to test; small expected gain.
+4. DEAD (Run 13b: −0.0101; top-scored negatives are near-positives, over-sampling them suppresses taste signal) — **Hard-negative curriculum** — sample negatives proportional to current
+   model score (self-adversarial) rather than uniformly. Medium effort;
+   interacts with InfoNCE's existing hard-negative weighting, may double-dip
+   or may be redundant.
+5. UNPARKED by owner 29 Aug night, IN FLIGHT (Run 18) — **Causal sequence features** — everything so
+   far is static; use the user's strictly-prior behavior: last-impression
+   label, rolling long_view rate over last 10, prior impression count, prior
+   long_views with this author. Sorted by (date, time_ms); a row's features
+   never include its own or any later label. The production-recsys #1 lever,
+   untried here.
+6. UNPARKED by owner 29 Aug night, QUEUED (Run 19) — **Multi-task auxiliary labels** — train log also records is_click /
+   is_like / is_comment / is_hate; predict them jointly with shared embeddings
+   (long_view stays the graded head). Better representations from data we
+   already legally hold.
+7. RETIRED UNUSED (legality analysis, 29 Aug night): every row of log_random_4_22_to_5_08 falls inside the valid/test window — training on it would be temporal leakage. — **Random-exposure log** — kit ships log_random (videos
+   shown at random); a small unbiased sample usable for debiasing the
+   algorithmically-biased main log.
+8. DEAD (Run 16a: user×tab cross 0.5973, sparse cross overfits) — **Per-tab models or tab-conditioned interactions** — the log spans distinct
+   surfaces (tabs); one global model may blur tab-specific taste. Check tab
+   cardinality/skew first.
+9. DEAD (Run 16b/c: τ=1 already optimal; sharpened and softened both worse) — **nDCG-targeted top-slot loss** — extra weight on getting the single best
+   item right (nDCG@5's log-discount makes slot 1 worth most). Risk: fights
+   GAUC half of the metric — mind the Run-1 lesson.
+
+## DEAD — with the reason (do not retry the naive form)
+
+- Row reweighting by 1/impressions (Run 1): GAUC is positive-count-weighted;
+  helping nDCG's equal-user view hurts GAUC more.
+- Dense play-ratio target (Run 1): duration-mediated → learns "prefer short
+  videos". (Duration-normalised variant technically still open but
+  low-priority.)
+- BPR lr/pair-count scaling (Run 3): gain capped by objective, not hyperparams;
+  lr ≥ .002 destructive.
+- Embedding capacity k=32 (Run 4): does nothing under either objective.
+- Categorical side features — hour/content/uactive/vpop (Runs 5–6): +0.0003
+  noise-level, redundant with each other; do NOT stack.
+- Explicit user×author / user×tag affinity rates (Runs 6–7): naive encoding
+  self-leaks (−0.012); LOO-fixed version is redundant with FM factorization.
+- Bigger K in InfoNCE (Run 4): K=8 ≈ K=4, saturated.
+- Seed ensembling beyond 5 (Run 8): +0.0004 total; FM seeds converge to
+  near-identical solutions. Already banked; more seeds won't add.
+
+## Standing rules (from harness.py, enforced mechanically)
+
+- ≥3 seeds; claim nothing under ±0.002 (noise σ≈0.0008).
+- Verdicts on validation; test recorded for audit, never tuned on.
+- Any per-entity rate feature over sparse keys → leave-one-out encoding
+  (Run 6's lesson).
+- Log intent BEFORE training (survives kills), result after.
+
+## OPEN — residual unknowns for the autonomous agent's demonstration run
+
+(Genuinely untested combinations; each earlier test was under different
+premises, noted per item. The agent picks from these.)
+
+10. **hour field under FM-rich** — Run 5 tested hour under the MLP on base
+    fields only; never under the FM on rich fields.
+11. **content fields (video_type/music_type/tag) under FM-rich** — same
+    premise gap as #10.
+12. **duration-normalised play-ratio as auxiliary signal** — Run 1 killed the
+    naive ratio TARGET but explicitly left the duration-normalised variant
+    open; never revisited after the objective/feature revolutions.
+13. **K=2 under FM-rich** — K saturated upward (4≈8) on base fields; the
+    cheap downward direction was never measured on rich fields.
+14. **per-field embedding sizes** — video/user k=24, low-cardinality fields
+    k=8; parameter budget shifted toward where cardinality lives. Never
+    tested in any premise.
