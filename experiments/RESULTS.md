@@ -689,3 +689,80 @@ cross-run comparison at this precision is sound.
 rich causal sequence features, listwise InfoNCE K=4) — +0.0170 over the
 published 0.5946. Remaining OPEN ideas after this run: #13 K=2 under FM-rich,
 #14 per-field embedding sizes.
+
+## Run 32 — 30 Aug 2026, autonomous iteration 3: per-field embedding sizes (interaction rank) under FM-rich
+
+*Idea picked by the agent from IDEAS.md's residual-unknown list (#14) — the last
+structural unknown and the only one never tested under any premise.* Every model
+in this project has used one global k: 16 dimensions for `user_id` (26,210
+values) and 16 for `prev1` (3 values). IDEAS #14 proposed shifting the parameter
+budget toward where cardinality lives — wide fields k=24, narrow fields k=8.
+
+**Restating what the knob actually does.** The parameter-budget framing in the
+idea is nearly vacuous: the narrow fields hold 71 of V's 40,313 rows, so
+shrinking them frees 0.1% of the parameters (645,008 → 644,368, measured). What
+per-field k really controls in an FM is the **rank of every pairwise
+interaction** the field takes part in — field j and field l interact through a
+bilinear form of rank min(k_j, k_l). So this run is a per-field-pair *rank*
+experiment, which nothing before it has touched, and Run 4's dead uniform k=32
+does not answer it: raising every k at once cannot separate "more rank on
+user×video" from "more rank on prev1×tab".
+
+Implementation: dimensions k_j…k_max of a field's embedding rows are initialised
+to zero and their gradient is masked, so they stay exactly zero for the whole
+run. `masked_infonce_step` was asserted **bit-identical** to the banked
+`listwise.infonce_step` at mask≡1 (V and W equal to the last bit over 5 steps)
+before any arm ran, so R32-ctrl is a true control. 2×3 grid over (wide rank,
+narrow rank), wide = train vocabulary ≥ 1000 (`user_id`, `video_id`,
+`author_id`), narrow = the other nine. FM lr 1e-3, listwise InfoNCE K=4,
+patience 4, rich causal fields, 3 seeds per arm.
+
+| Arm | V params | valid (5 dp) | Δ vs control | test primary | test GAUC / nDCG@5 |
+|---|---|---|---|---|---|
+| R32-ctrl wide16 / narrow16 (control) | 645,008 | 0.61715 | — | 0.6098 ± 0.0010 | 0.6797 / 0.5398 |
+| R32a wide24 / narrow8 (IDEAS #14) | 966,232 | 0.61098 | **−0.00617** | 0.6046 ± 0.0016 | 0.6735 / 0.5357 |
+| R32b wide16 / narrow8 | 644,368 | 0.61186 | **−0.00529** | 0.6052 ± 0.0029 | 0.6741 / 0.5363 |
+| R32c wide24 / narrow16 | 966,872 | 0.61568 | **−0.00147** | 0.6092 ± 0.0005 | 0.6793 / 0.5391 |
+| R32d wide24 / narrow24 (uniform k=24) | 967,512 | 0.61656 | **−0.00059** | 0.6098 ± 0.0006 | 0.6804 / 0.5393 |
+
+**Verdict: IDEA #14 DEAD, no promotion, no bank.** No arm beats the control; the
+proposed configuration is the *worst* of the five. The promotion step (5-seed
+committee of the winning arm against the banked R24b committee's validation
+0.61906) was written into the script and did not fire, as pre-committed.
+
+**Interpretation — the result is backwards from the hypothesis, and that is the
+finding.** Read the grid by column and the pattern is unambiguous: the score
+tracks the **narrow** rank and ignores the wide one. At fixed narrow rank,
+widening 16→24 does nothing (−0.0015 at narrow 16, −0.0009 at narrow 8 — both
+inside noise); at fixed wide rank, cutting narrow 16→8 costs −0.0053 to −0.0062,
+**2.6–3× the 0.002 gate** and visible in both metric components (valid GAUC
+0.681–0.683 vs 0.690). This is a claimable negative, not a null.
+
+The mechanism is the min(k_j, k_l) rule. My own framing when writing the script
+— "`prev1`×`tab` has 15 configurations and a rank-16 form is free to memorise
+them" — was the wrong intuition, and the data says so. A narrow field's rank
+does not bound some small cross of its own; it bounds **every interaction it has
+with the wide fields**. `prev1`×`user_id` is a 3 × 26,210 surface, and rank 8 is
+the ceiling on how richly the last impression's outcome can modulate 26,210
+distinct user vectors. The causal sequence fields are exactly the ones Run 21
+showed carry the project's biggest gain, and they carry it *as modulators of the
+user and video embeddings* — which is precisely the capacity R32a/b removed.
+Low cardinality is not low expressive load.
+
+Two secondary readings, both cheap and both worth having. First, **R32d
+reconfirms Run 4's uniform-capacity saturation under a premise two revolutions
+newer**: uniform k=24 lands −0.0006 from uniform k=16, so the k=16 ⇒ k=32 null
+Run 4 measured on base fields with the MLP still holds for the FM on rich causal
+fields. Second, this run finally explains *why* capacity looks saturated: it is
+not that the model has enough rank everywhere, it is that the binding constraint
+sits on the narrow fields, where nobody thought to look, and the banked k=16
+already sits at or above it.
+
+**Banked best unchanged: test primary 0.6116** (5-seed FM committee, k=16, rich
+causal sequence features, listwise InfoNCE K=4) — +0.0170 over the published
+0.5946. R32-ctrl reproduces the Run 30 and Run 31 controls to five decimals on
+validation (0.61715) and four on test (0.6098), a third independent code path.
+
+*Backlog status after this run: #10, #11, #12 and #14 of the freeze-time
+residual-unknown list are resolved and dead. IDEAS #13 (K=2 under FM-rich) is
+the last untested item on the backlog.*

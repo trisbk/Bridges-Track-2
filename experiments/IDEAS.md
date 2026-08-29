@@ -68,6 +68,19 @@ averaging. Reproduce via experiments/ensemble.py.
   (watch-completion, not within-user preference), and any gradient that pulls
   the shared embeddings toward it pulls them off the GAUC/nDCG objective. Do
   not retry with a third normalisation.
+- Per-field embedding sizes / interaction rank (Run 32): k in an FM is the RANK
+  of every interaction a field joins (pair j,l interacts at rank min(k_j,k_l)),
+  not a parameter budget — the nine narrow fields are 71 of V's 40,313 rows, so
+  shrinking them frees 0.1% of parameters. Cutting the NARROW fields to rank 8
+  costs −0.0053 to −0.0062 on validation at either wide rank; widening the wide
+  fields to 24 does nothing at either narrow rank (−0.0006 to −0.0015). The
+  binding constraint is the narrow fields, because their rank caps
+  prev1 x user_id (a 3 x 26,210 surface) — the causal sequence fields earn their
+  Run 21 gain by MODULATING the user/video embeddings, so low cardinality is not
+  low expressive load. Do not retry any variant that gives a sequence/context
+  field less rank than the wide fields. Also: uniform k=24 = k=16 −0.0006, which
+  reconfirms Run 4's capacity saturation under the FM-rich premise.
+
 - Side/content fields, re-tested under the FM-rich premise (Run 30): hour and
   video_type/music_type/tag are worth +0.0003 on validation under the FM on
   rich causal features — the *same* +0.0003 Run 5 measured under the MLP on
@@ -102,6 +115,8 @@ premises, noted per item. The agent picks from these.)
     open; never revisited after the objective/feature revolutions.
 13. **K=2 under FM-rich** — K saturated upward (4≈8) on base fields; the
     cheap downward direction was never measured on rich fields.
-14. **per-field embedding sizes** — video/user k=24, low-cardinality fields
-    k=8; parameter budget shifted toward where cardinality lives. Never
-    tested in any premise.
+14. DEAD (Run 32: the proposed wide24/narrow8 config is the WORST of five
+    arms, valid −0.00617 vs a same-run control; narrow8 costs −0.0053 even at
+    unchanged wide rank, 2.6x the gate) — **per-field embedding sizes** —
+    video/user k=24, low-cardinality fields k=8; parameter budget shifted
+    toward where cardinality lives. Never tested in any premise.

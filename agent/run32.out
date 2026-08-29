@@ -1,0 +1,32 @@
+loading + sequencing ...
+rows 1436609, dim 40313, fields 12
+field           card  group 
+user_id        26210  WIDE  
+video_id        7538  WIDE  
+author_id       6482  WIDE  
+tab               15  narrow
+dur_bucket        10  narrow
+prev1              3  narrow
+hist10            12  narrow
+hist_n             6  narrow
+auth_hist          4  narrow
+hist30            12  narrow
+tag_hist           4  narrow
+gap                5  narrow
+preflight OK: masked_infonce_step == listwise.infonce_step at mask==1 (bit-identical V and W over 5 steps)
+[SIGNIFICANT_BUT_NOT_BEST] R32-ctrl FM-rich wide16/narrow16: test 0.6098 ± 0.0010 (d/base +0.0148, vs banked -0.0018 ❌ not better, 155.4s)
+[SIGNIFICANT_BUT_NOT_BEST] R32a FM-rich wide24/narrow8: test 0.6046 ± 0.0016 (d/base +0.0096, vs banked -0.0070 ❌ not better, 213.6s)
+[SIGNIFICANT_BUT_NOT_BEST] R32b FM-rich wide16/narrow8: test 0.6052 ± 0.0029 (d/base +0.0102, vs banked -0.0064 ❌ not better, 170.5s)
+[SIGNIFICANT_BUT_NOT_BEST] R32c FM-rich wide24/narrow16: test 0.6092 ± 0.0005 (d/base +0.0142, vs banked -0.0024 ❌ not better, 182.2s)
+[SIGNIFICANT_BUT_NOT_BEST] R32d FM-rich wide24/narrow24: test 0.6098 ± 0.0006 (d/base +0.0148, vs banked -0.0018 ❌ not better, 163.6s)
+
+--- validation-only decision table (test shown for audit) ---
+arm                                    V params     valid    d/ctrl      test
+R32-ctrl FM-rich wide16/narrow16         645008   0.61715  +0.00000    0.6098
+R32a FM-rich wide24/narrow8              966232   0.61098  -0.00617    0.6046
+R32b FM-rich wide16/narrow8              644368   0.61186  -0.00529    0.6052
+R32c FM-rich wide24/narrow16             966872   0.61568  -0.00147    0.6092
+R32d FM-rich wide24/narrow24             967512   0.61656  -0.00059    0.6098
+
+best arm on VALIDATION: R32d FM-rich wide24/narrow24 (0.61656, -0.00059 vs control; gate 0.002)
+No per-field-rank arm clears the gate over the control on validation -> IDEAS #14 dies. No promotion.
