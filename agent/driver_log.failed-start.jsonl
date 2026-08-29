@@ -1,0 +1,38 @@
+{"event": "driver_start", "eps": 0.002, "n_conv": 3, "max_iters": 10, "ts": "2026-08-30 00:40:44"}
+{"event": "iteration_start", "iteration": 1, "attempt": 1, "ts": "2026-08-30 00:40:44"}
+{"event": "fatal", "error": "claude CLI not found on PATH", "ts": "2026-08-30 00:40:44"}
+{"event": "driver_start", "eps": 0.002, "n_conv": 3, "max_iters": 10, "ts": "2026-08-30 00:43:56"}
+{"event": "iteration_start", "iteration": 1, "attempt": 1, "ts": "2026-08-30 00:43:56"}
+{"event": "iteration_end", "iteration": 1, "attempt": 1, "returncode": 1, "tail": "Not logged in \u00b7 Please run /login\n", "ts": "2026-08-30 00:43:57"}
+{"event": "iteration_restart", "iteration": 1, "attempt": 1, "ts": "2026-08-30 00:43:57"}
+{"event": "iteration_start", "iteration": 1, "attempt": 2, "ts": "2026-08-30 00:43:57"}
+{"event": "iteration_end", "iteration": 1, "attempt": 2, "returncode": 1, "tail": "Not logged in \u00b7 Please run /login\n", "ts": "2026-08-30 00:43:58"}
+{"event": "iteration_restart", "iteration": 1, "attempt": 2, "ts": "2026-08-30 00:43:58"}
+{"event": "iteration_start", "iteration": 1, "attempt": 3, "ts": "2026-08-30 00:43:58"}
+{"event": "iteration_end", "iteration": 1, "attempt": 3, "returncode": 1, "tail": "Not logged in \u00b7 Please run /login\n", "ts": "2026-08-30 00:43:59"}
+{"event": "iteration_restart", "iteration": 1, "attempt": 3, "ts": "2026-08-30 00:43:59"}
+{"event": "iteration_abandoned", "iteration": 1, "ts": "2026-08-30 00:43:59"}
+{"event": "convergence_check", "iteration": 1, "ok": false, "best": 0.6116, "gain": 0.0, "consecutive_below_eps": 1, "ts": "2026-08-30 00:43:59"}
+{"event": "iteration_start", "iteration": 2, "attempt": 1, "ts": "2026-08-30 00:43:59"}
+{"event": "iteration_end", "iteration": 2, "attempt": 1, "returncode": 1, "tail": "Not logged in \u00b7 Please run /login\n", "ts": "2026-08-30 00:44:00"}
+{"event": "iteration_restart", "iteration": 2, "attempt": 1, "ts": "2026-08-30 00:44:00"}
+{"event": "iteration_start", "iteration": 2, "attempt": 2, "ts": "2026-08-30 00:44:00"}
+{"event": "iteration_end", "iteration": 2, "attempt": 2, "returncode": 1, "tail": "Not logged in \u00b7 Please run /login\n", "ts": "2026-08-30 00:44:01"}
+{"event": "iteration_restart", "iteration": 2, "attempt": 2, "ts": "2026-08-30 00:44:01"}
+{"event": "iteration_start", "iteration": 2, "attempt": 3, "ts": "2026-08-30 00:44:01"}
+{"event": "iteration_end", "iteration": 2, "attempt": 3, "returncode": 1, "tail": "Not logged in \u00b7 Please run /login\n", "ts": "2026-08-30 00:44:01"}
+{"event": "iteration_restart", "iteration": 2, "attempt": 3, "ts": "2026-08-30 00:44:01"}
+{"event": "iteration_abandoned", "iteration": 2, "ts": "2026-08-30 00:44:01"}
+{"event": "convergence_check", "iteration": 2, "ok": false, "best": 0.6116, "gain": 0.0, "consecutive_below_eps": 2, "ts": "2026-08-30 00:44:01"}
+{"event": "iteration_start", "iteration": 3, "attempt": 1, "ts": "2026-08-30 00:44:01"}
+{"event": "iteration_end", "iteration": 3, "attempt": 1, "returncode": 1, "tail": "Not logged in \u00b7 Please run /login\n", "ts": "2026-08-30 00:44:02"}
+{"event": "iteration_restart", "iteration": 3, "attempt": 1, "ts": "2026-08-30 00:44:02"}
+{"event": "iteration_start", "iteration": 3, "attempt": 2, "ts": "2026-08-30 00:44:02"}
+{"event": "iteration_end", "iteration": 3, "attempt": 2, "returncode": 1, "tail": "Not logged in \u00b7 Please run /login\n", "ts": "2026-08-30 00:44:03"}
+{"event": "iteration_restart", "iteration": 3, "attempt": 2, "ts": "2026-08-30 00:44:03"}
+{"event": "iteration_start", "iteration": 3, "attempt": 3, "ts": "2026-08-30 00:44:03"}
+{"event": "iteration_end", "iteration": 3, "attempt": 3, "returncode": 1, "tail": "Not logged in \u00b7 Please run /login\n", "ts": "2026-08-30 00:44:04"}
+{"event": "iteration_restart", "iteration": 3, "attempt": 3, "ts": "2026-08-30 00:44:04"}
+{"event": "iteration_abandoned", "iteration": 3, "ts": "2026-08-30 00:44:04"}
+{"event": "convergence_check", "iteration": 3, "ok": false, "best": 0.6116, "gain": 0.0, "consecutive_below_eps": 3, "ts": "2026-08-30 00:44:04"}
+{"event": "converged", "final_best": 0.6116, "rule": "3 consecutive iterations < 0.002", "ts": "2026-08-30 00:44:04"}

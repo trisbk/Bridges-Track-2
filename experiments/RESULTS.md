@@ -556,3 +556,59 @@ data). 29 runs, ~60 configurations, 2 documented test-peek refusals,
 1 legality retirement, every claim 3+ seeds past a pre-committed bar.
 
 Next phase: autonomy driver, unattended agent demonstration, report, video.
+
+# AUTONOMOUS PHASE — the driver loops the agent, unattended
+
+## Run 30 — 30 Aug 2026, autonomous iteration 1: side + content fields under FM-rich
+
+*Idea picked by the agent from IDEAS.md's residual-unknown list (#10 and #11 —
+the same premise gap, so one experiment).* Runs 5–6 measured `hour` and the
+content fields (`video_type`/`music_type`/`tag`) under the **MLP on the five
+base fields** and retired them at +0.0003. Two revolutions later the premise is
+different in both directions that matter: the model class is now the FM (Run 21:
++0.006 over the MLP on rich fields) and the features are rich causal sequences.
+An FM factorises *every* field pair, so a new field is not merely extra input —
+it buys user×tag, user×music_type, tab×hour interactions a concat-MLP over base
+fields cannot form. That mechanism had never been tested.
+
+A **control arm on the identical code path** was run alongside, so the verdict
+compares validation numbers produced in the same session rather than across runs.
+FM k=16, lr 1e-3, listwise InfoNCE K=4, patience 4, 3 seeds per arm.
+
+| Arm | valid (5 dp) | Δ vs control | test primary | test GAUC / nDCG@5 |
+|---|---|---|---|---|
+| R30-ctrl FM-rich (control) | 0.61715 | — | 0.6098 ± 0.0010 | 0.6797 / 0.5398 |
+| R30a + hour | 0.61711 | **−0.00004** | 0.6106 ± 0.0009 | 0.6810 / 0.5402 |
+| R30b + content | 0.61712 | **−0.00003** | 0.6101 ± 0.0011 | 0.6803 / 0.5398 |
+| R30c + hour + content | 0.61746 | **+0.00031** | 0.6103 ± 0.0013 | 0.6804 / 0.5403 |
+
+**Verdict: both ideas DEAD, no promotion, no bank.** The best arm clears the
+control by +0.00031 on validation — a sixth of the 0.002 gate, and well inside
+the σ≈0.0008 seed noise. The promotion step (5-seed committee of the winning
+arm, to be compared against the banked R24b committee's validation 0.61906) was
+written into the script and **did not fire**, exactly as pre-committed.
+
+**Interpretation.** The striking part is not that the fields failed but that
+they failed *by the same margin*: Run 5 measured +0.0003 for these families
+under the MLP on base fields, and Run 30 measures +0.0003 under the FM on rich
+causal fields. Two model classes and two feature regimes apart, the number does
+not move. That is much stronger evidence than either run alone — it says these
+side attributes carry essentially no incremental *within-user ranking* signal in
+KuaiRand-Pure, rather than that the earlier architecture was too weak to use
+them. The FM's pairwise factorization, which rescued the sequence features so
+dramatically in Run 21, does not rescue static content metadata. It also
+sharpens the project's central finding: what mattered was never *more* fields,
+it was *causal, user-conditional, time-varying* fields.
+
+**Third selection-integrity refusal.** R30a shows test 0.6106 against the
+control's 0.6098 — a +0.0008 test "gain" — while its validation is *0.00004
+below* the control. Reading that as a win would be pure test-peeking; it is the
+seed-noise band doing what noise does. Recorded as an observation, not a result.
+The three refusals (Run 15, Run 29, Run 30) are now a pattern rather than an
+anecdote: every time the test number has diverged from the validation ranking in
+this project, the discipline has held.
+
+**Banked best unchanged: test primary 0.6116** (5-seed FM committee, k=16, rich
+causal sequence features, listwise InfoNCE K=4) — +0.0170 over the published
+0.5946. Remaining OPEN ideas after this run: #12 duration-normalised play-ratio
+as an auxiliary signal, #13 K=2 under FM-rich, #14 per-field embedding sizes.

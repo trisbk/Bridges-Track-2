@@ -1,0 +1,2 @@
+[driver] {'event': 'driver_start', 'eps': 0.002, 'n_conv': 3, 'max_iters': 10, 'ts': '2026-08-30 00:47:13'}
+[driver] {'event': 'iteration_start', 'iteration': 1, 'attempt': 1, 'ts': '2026-08-30 00:47:13'}

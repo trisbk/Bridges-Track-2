@@ -60,6 +60,12 @@ averaging. Reproduce via experiments/ensemble.py.
 - Bigger K in InfoNCE (Run 4): K=8 ≈ K=4, saturated.
 - Seed ensembling beyond 5 (Run 8): +0.0004 total; FM seeds converge to
   near-identical solutions. Already banked; more seeds won't add.
+- Side/content fields, re-tested under the FM-rich premise (Run 30): hour and
+  video_type/music_type/tag are worth +0.0003 on validation under the FM on
+  rich causal features — the *same* +0.0003 Run 5 measured under the MLP on
+  base fields. Two model classes and two feature regimes apart, the number is
+  unchanged: these fields carry ~no incremental ranking signal here, and the
+  FM's pairwise factorization does not rescue them.
 
 ## Standing rules (from harness.py, enforced mechanically)
 
@@ -74,10 +80,12 @@ averaging. Reproduce via experiments/ensemble.py.
 (Genuinely untested combinations; each earlier test was under different
 premises, noted per item. The agent picks from these.)
 
-10. **hour field under FM-rich** — Run 5 tested hour under the MLP on base
-    fields only; never under the FM on rich fields.
-11. **content fields (video_type/music_type/tag) under FM-rich** — same
-    premise gap as #10.
+10. DEAD (Run 30a: valid −0.00004 vs a same-run control; the premise change
+    does not revive it) — **hour field under FM-rich** — Run 5 tested hour
+    under the MLP on base fields only; never under the FM on rich fields.
+11. DEAD (Run 30b: valid −0.00003 vs control; Run 30c stacking both = +0.00031,
+    still 6× under the gate) — **content fields (video_type/music_type/tag)
+    under FM-rich** — same premise gap as #10.
 12. **duration-normalised play-ratio as auxiliary signal** — Run 1 killed the
     naive ratio TARGET but explicitly left the duration-normalised variant
     open; never revisited after the objective/feature revolutions.
