@@ -114,3 +114,28 @@ sequence features, committee) · 3 documented test-peek refusals ·
 2 diagnosed leakage traps · 1 legality retirement (random-exposure log) ·
 2 error-recovery events, both with zero data loss · final: **0.6116
 (+0.0170 vs published), twice-converged and independently reproduced.**
+
+## Addendum (30 Aug): clean-room autonomous run + spec compliance
+
+**Clean-room run** (records in `cleanroom/`): the same agent relaunched with
+ZERO prior knowledge — empty logs, no backlog, bare official baseline. Six
+iterations, 1 h 48 m, zero interventions: reproduced the baseline (0.59497),
+banked a feature-engineering win at iteration 3 (**0.59744, +0.0028 over the
+published baseline**), refused two better-looking test scores on validation
+grounds entirely on its own (iterations 4–5), and converged by the official
+rule. Its research path diverged from the main campaign's (feature fields
+paid under its BCE regime; pairwise loss refuted with a mechanism), which
+makes it a genuine independent trajectory, not a replay.
+
+**Official-limits compliance, all campaigns** (per the Primary-metric
+clause: validation-ε convergence, 50-iteration cap, 6 h ceiling —
+whichever first):
+
+| Campaign | Iterations (≤50) | Wall-clock (≤6 h) | Terminated by |
+|---|---|---|---|
+| Interactive (Runs 1–29) | 29 | supervised session (~1 day, spec's semi-automated mode) | validation-ε convergence → freeze |
+| Demo A (Runs 30–32) | 3 | 52 min | validation-ε convergence |
+| Clean-room (6 runs) | 6 | 1 h 48 m | validation-ε convergence |
+
+Scored checkpoint = validation-best at convergence (R24b; the R29
+validation tie resolved to the incumbent), evaluated once on the test split.
