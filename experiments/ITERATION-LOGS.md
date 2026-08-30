@@ -93,9 +93,14 @@ in brackets.
 | 28 | Recipe retune on new premises (4 configs) | run28.py [86faf64] | best singles 0.6113 | — | ❌ vs committee; lr 5e-4 lifts singles → fed Run 29 |
 | 29 | Committees on improved singles | run29.py [d53cdf1] | 0.6123 / 0.6117 | — | ❌ **test-peek refusal #2**: best-test arm has worst validation; incumbent kept. Convergence → **freeze at 0.6116** |
 
-**Phase 2 — autonomous unattended run** (driver-launched, zero
-interventions; agent commits in THIS repo; GAUC/nDCG components in
-LOG.jsonl per the upgraded harness):
+**Phase 2 — autonomous verification campaign** (a SEPARATE campaign, not a
+resumption: Campaign 1 converged and froze at Run 29; this new run was
+initialized from that frozen state to test it autonomously. Global run
+numbers 30–32 are project-wide identifiers for traceability, not a claim of
+continuation. Its result — immediate re-convergence in 3 sub-ε iterations —
+is itself the finding: a converged state, re-challenged with zero human
+input, stays converged. Driver-launched, zero interventions; agent commits
+in THIS repo; GAUC/nDCG components in LOG.jsonl):
 
 | Run | Hypothesis | Commit | test primary | Verdict |
 |---|---|---|---|---|
@@ -130,6 +135,9 @@ makes it a genuine independent trajectory, not a replay.
 **Official-limits compliance, all campaigns** (per the Primary-metric
 clause: validation-ε convergence, 50-iteration cap, 6 h ceiling —
 whichever first):
+
+Three separate campaigns, each with its own start state, driver log, and
+convergence — none resumed after converging:
 
 | Campaign | Iterations (≤50) | Wall-clock (≤6 h) | Terminated by |
 |---|---|---|---|
