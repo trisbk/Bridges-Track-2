@@ -30,15 +30,23 @@ human-initiated by design. Event log: `agent/driver_log.jsonl`.
 
 **Interactive research phase (Runs 1–29):** the agent (Claude Code, in an
 interactive session) made all iteration-level research decisions — what to
-try, how to implement, how to interpret, when an idea was dead. Human
-(owner) interventions were strategic and are enumerated exhaustively:
-choice of track; the decision to defer, then later permit, three idea
-families (sequence features, multi-task labels, random-exposure log);
-setting the stopping rule (stop at 0.65 or after 5 unbanked runs); and a
-reporting-format request (✅/❌ vs banked). No human proposed, implemented,
-tuned, or interpreted any experiment. Restart-after-interruption occurred
-once (Run 6, lid-close SIGTERM) — per the organizers' ruling, restarts are
-not interventions.
+try, how to implement, how to interpret, when an idea was dead.
+
+Human actions, enumerated exhaustively and classified:
+
+*Loop-relevant interventions (counted): **3***
+1. Deferring three idea families (sequence features, multi-task labels,
+   random-exposure log) — between Runs 13→14; constrained the search space.
+2. Permitting them — between Runs 17→18; directly enabled the Run 18
+   breakthrough. The single most consequential human decision.
+3. Setting an additional stopping rule (stop at 0.65 or after 5 unbanked
+   runs) — before Run 26; governed when exploration ended.
+
+*Administrative actions (not loop interventions):* competition-track
+selection (before any agent loop existed) and a report-formatting request.
+No human proposed, implemented, tuned, or interpreted any experiment.
+Restart-after-interruption occurred once (Run 6, lid-close SIGTERM) — per
+the organizers' ruling, restarts are not interventions.
 
 ## Error & recovery events
 
@@ -136,12 +144,29 @@ makes it a genuine independent trajectory, not a replay.
 clause: validation-ε convergence, 50-iteration cap, 6 h ceiling —
 whichever first):
 
-Three separate campaigns, each with its own start state, driver log, and
-convergence — none resumed after converging:
+**Strict-rule segmentation of the interactive phase.** Applying the
+official convergence rule (validation improvement > ε resets a 3-miss
+counter) to the validation record partitions Runs 1–29 into bounded runs,
+each relaunched with accumulated memory (the same pattern as the
+verification campaign):
+
+| Segment | Iterations | Validation ε-wins | Converged at | Checkpoint |
+|---|---|---|---|---|
+| Exploration run 1 | Runs 1–7 (7) | R4 +0.0021 (listwise) | Run 7 | valid 0.6035 / test 0.5978 |
+| Low-yield probes | Runs 8–16 (9, as three 3-miss probes) | none | each after 3 misses | unchanged |
+| **Culminating run** | **Runs 17–27 (11)** | R18 +0.0026, R20 +0.0025, R21 +0.0072, R24 +0.0027 | **Run 27** (25/26/27 sub-ε) | **valid 0.61906 / test 0.6116** |
+| Post-convergence probes | Runs 28–29 (2) | none (banked nothing; checkpoint unchanged) | owner stopping rule | unchanged |
+
+The scored submission is the culminating run's converged checkpoint. That
+run used **11 of 50 iterations** in a measured **≤ 1 h 38 m** of wall-clock
+(the full R17–R29 log span, 29 Aug 19:37–21:15, which overstates it) —
+inside every official limit.
+
+All campaigns, side by side — none resumed after converging:
 
 | Campaign | Iterations (≤50) | Wall-clock (≤6 h) | Terminated by |
 |---|---|---|---|
-| Interactive (Runs 1–29) | 29 | supervised session (~1 day, spec's semi-automated mode) | validation-ε convergence → freeze |
+| Interactive culminating run (17–27) | 11 | ≤ 1 h 38 m | validation-ε convergence → freeze |
 | Demo A (Runs 30–32) | 3 | 52 min | validation-ε convergence |
 | Clean-room (6 runs) | 6 | 1 h 48 m | validation-ε convergence |
 

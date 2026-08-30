@@ -50,8 +50,7 @@ Model training within iterations is a negligible share of wall-clock
 
 The interactive research campaign (Runs 1–29, which produced the 0.6116
 checkpoint) ran as a supervised session over ~1 day; its interventions are
-enumerated in `experiments/ITERATION-LOGS.md` (a "handful": five strategic
-decisions, zero iteration-level ones). Token usage for that phase was not
+enumerated and classified in `experiments/ITERATION-LOGS.md` (**3 loop-relevant interventions** plus 2 administrative actions; zero iteration-level ones). Token usage for that phase was not
 separately metered (it shared a general-purpose session); the two fully
 instrumented autonomous runs above are the metered reference points.
 
@@ -59,7 +58,7 @@ instrumented autonomous runs above are the metered reference points.
 
 | Run | Start state | Manual interventions | Converged at |
 |---|---|---|---|
-| Interactive campaign (29 runs) | official baseline | 5 strategic (0 iteration-level) | **0.6116** — the scored submission |
+| Interactive campaign (29 runs; culminating run = iterations 17–27) | official baseline | 3 loop-relevant (0 iteration-level) | **0.6116** — the scored submission |
 | Demo A (3 runs, overnight) | finished research state | **0** | 0.6116 confirmed |
 | Clean-room (6 runs) | bare baseline, empty memory | **0** | **0.59744** (+0.0028 over baseline, its own discovery) |
 
