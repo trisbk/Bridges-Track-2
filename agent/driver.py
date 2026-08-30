@@ -21,7 +21,8 @@ PROMPT = ('Read agent/ITERATION_PROMPT.md and execute exactly one research '
           'iteration as it specifies. You are running unattended; do not ask '
           'questions — make the best call and document it.')
 EPS, N_CONV = 0.002, 3
-MAX_ITERS = 10
+WALL_CLOCK_S = 6 * 3600   # official 6h wall-clock ceiling (problem statement)
+MAX_ITERS = 50            # official per-run cap (problem statement)
 TIMEOUT_S = 2400          # 40 min per iteration, then it counts as a crash
 RETRIES_PER_ITER = 2
 
@@ -74,7 +75,12 @@ def main():
               max_iters=MAX_ITERS)
     below_eps = 0
     prev_best = banked_best()
+    run_t0 = time.time()
     for i in range(1, MAX_ITERS + 1):
+        if time.time() - run_t0 > WALL_CLOCK_S:
+            log_event(event='wall_clock_ceiling', final_best=round(prev_best, 5),
+                      rule='6h ceiling per problem statement')
+            return
         ok = run_iteration(i)
         best = banked_best()
         gain = best - prev_best
