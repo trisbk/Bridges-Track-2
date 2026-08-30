@@ -12,7 +12,13 @@ reflect, decide what to try next — and we let it iterate until the official
 convergence criterion (ε = 0.002 over N = 3 iterations) said stop.
 
 **Result: test primary 0.6116 (GAUC 0.6825, nDCG@5 0.5408) — +0.0170 over
-the published baseline**, from 29 logged runs covering ~60 configurations.
+the published baseline** (per-metric deltas: GAUC +0.0215, nDCG@5 +0.0126),
+from 32 logged runs covering ~70 configurations — plus a separate
+**clean-room autonomous run**: relaunched from a bare baseline with zero
+prior knowledge and zero human interventions, the agent independently
+reached **0.59744 (+0.0028 over baseline)** in 6 iterations / 1 h 48 m,
+converging by the official rule and twice refusing better-looking test
+scores on validation grounds entirely on its own.
 The two structural discoveries, in the order the agent found them:
 
 1. **Match the objective to the metric.** The baseline trains pointwise
